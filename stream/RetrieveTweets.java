@@ -29,11 +29,11 @@ public class RetrieveTweets
     static double northeast_latitude;
     static double northeast_longitude;
     
-    final static String OAuthConsumerKey = "zZZ9lLXVclwV4jvJ0h9uMkL6h";
-    final static String OAuthConsumerSecret = "tfKHA8jBGNhtPD3sbOHLgeXLQmqB14Dbis5vyxRJBaLIU2AwTy";
-    final static String OAuthAccessToken = "898555464-x7oZQrkdi2nHrNILqOYhaJBGfboVT4KOsoRaXy11";
-    final static String OAuthAccessTokenSecret = "pEJEo2IGX2qfB8fYNjnnoORaD2P0hB5TjSOu04kzgjkoD";
-    final static String GoogleMapsApiKey = "AIzaSyCjhAVA-eYTPh5LPALAC3amT0yd3MJVSPo";
+    final static String OAuthConsumerKey = "";
+    final static String OAuthConsumerSecret = "";
+    final static String OAuthAccessToken = "";
+    final static String OAuthAccessTokenSecret = "";
+    final static String GoogleMapsApiKey = "";
 
     
     public static void main(String[] args)
