@@ -1,4 +1,7 @@
-To run this program, all you need to do is click run.bat.
+<h1>Twitter Status Retrieval</h1>
+
+**history** is used to get tweets by a specific username<br/>
+**stream** is used to get tweets by a specific location or around the globe
 
 Please read the following prior to running this program.
 
