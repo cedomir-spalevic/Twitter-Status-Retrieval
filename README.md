@@ -1,4 +1,4 @@
-<h1>Twitter Status Retrieval</h1>
+# Twitter Status Retrieval
 
 **history** is used to get tweets by a specific username<br/>
 **stream** is used to get tweets by a specific location or around the globe
