@@ -6,7 +6,7 @@
 ## stream
 > used to get tweets by a specific location or around the globe
 
-
+<br/><br/><br/>
 
 #### Please read the following prior to running
 > This program will automatically create a folder named TwitterData. Inside this folder, another folder will be created with the format > YYYYMMDD_HHMM corresponding to the time it ran.
