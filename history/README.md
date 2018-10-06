@@ -27,5 +27,5 @@ ending_date - the ending date to filter the statuses with <br/>
 beginning_Date - the beginning date to filter the statuses with
 ```bash
 Usage: run.bat username
-Usage: run.bat username ending_date beginning_Date
+Usage: run.bat username ending_date beginning_date
 ```
