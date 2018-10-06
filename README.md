@@ -6,7 +6,8 @@
 ## stream
 > used to get tweets by a specific location or around the globe
 
-<br/><br/>
+#### Note
+You are now required to apply for a developer account on Twitter. You will need to do that in order to obtain the API Keys
 
 #### Please read the following prior to running
 This program will automatically create a folder named TwitterData. Inside this folder, another folder will be created with the format > YYYYMMDD_HHMM corresponding to the time it ran.
@@ -18,7 +19,4 @@ There will be four formats of all tweets within this folder:
 4. serialized objects of each tweet
 
 You will need to edit run.bat and provide an argument before running.Change the value of location on the second line, to the location > you want. For example, Nashville, TN.
-
-#### Note
-You are now required to apply for a developer account on Twitter. You will need to do that in order to obtain the API Keys
 
