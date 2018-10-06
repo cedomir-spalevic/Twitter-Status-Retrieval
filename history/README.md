@@ -2,13 +2,13 @@
 
 <br/>
 
-### Note
+## Note
 You are now required to apply for a developer account on Twitter. You will need to do that in order to obtain the API Keys.
 When you obtain your keys, place them in ```credentials.json```
 
 <br/>
 
-### Please read the following prior to running
+## Please read the following prior to running
 This program will automatically create a folder named TwitterData. Inside this folder, another folder will be created with the format > YYYYMMDD_HHMM corresponding to the time it ran.
 
 There will be four formats of all tweets within this folder:
@@ -22,6 +22,9 @@ You will need to edit run.bat and provide an argument before running.Change the 
 <br/>
 
 ## How to run
+Username - the Twitter username to retrieve statuses with
+ending_date - the ending date to filter the statuses with
+beginning_Date - the beginning date to filter the statuses with
 ```bash
 Usage: run.bat username
 Usage: run.bat username ending_date beginning_Date
