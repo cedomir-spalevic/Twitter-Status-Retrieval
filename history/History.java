@@ -1,28 +1,24 @@
-package history;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import twitter4j.Paging;
-import twitter4j.Status;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.User;
+import org.json.simple.parser.*;
+import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
- 
-public class RetrieveUserScreenNameTweets 
+
+/**
+ * Retrieve public Twitter statuses from a given username with Twitter4j
+ * 
+ * @author Cedomir Spalevic
+ */
+public class History 
 {
-    final static String OAuthConsumerKey = "";
-    final static String OAuthConsumerSecret = "";
-    final static String OAuthAccessToken = "";
-    final static String OAuthAccessTokenSecret = "";
+    static String OAuthConsumerKey = "";
+    static String OAuthConsumerSecret = "";
+    static String OAuthAccessToken = "";
+    static String OAuthAccessTokenSecret = "";
+    static String GoogleMapsApiKey = "";
      
     public static void main(String[] args) 
     {
@@ -31,30 +27,47 @@ public class RetrieveUserScreenNameTweets
         Date beginning_date = null;
         boolean wants_date = false;
          
-        if(args.length != 1 || args.length > 3)
-        {
-            System.out.println("Usage: user_screenname or\n" +
+        if(args.length != 1 || args.length > 3) {
+            System.out.println("Usage: user_screenname\n" +
                                 "Usage: user_screenname ending_date beginning_date\n");
             System.exit(1);
         }
          
         //get arguments
         user_screenname = args[0];
-        if(args.length == 3)
-        {
-            try
-            {
+        if(args.length == 3) {
+            try {
                 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
                 ending_date = sdf.parse(args[1]);
                 beginning_date = sdf.parse(args[2]);
             }
-            catch(ParseException e)
-            {
+            catch(ParseException e) {
                 System.out.println("Usage for ending_date and beginning_date: mm/dd/yyyy\n");
                 System.exit(1);
             }
             wants_date = true;
         }
+
+        //set API tokens from credentials.json
+		try {
+			JSONParser parser = new JSONParser();
+			JSONArray array = (JSONArray) parser.parse(new FileReader("credentials.json"));
+			JSONObject json = (JSONObject) array.get(0);
+
+			OAuthConsumerKey = (String) json.get("OAuthConsumerKey");
+			OAuthConsumerSecret = (String) json.get("AuthConsumerSecret");
+			OAuthAccessToken = (String) json.get("OAuthAccessToken");
+			OAuthAccessTokenSecret = (String) json.get("OAuthAccessTokenSecret");
+			GoogleMapsApiKey = (String) json.get("GoogleMapsApiKey");
+		}
+		catch(FileNotFoundException e) {
+			System.out.println("Could not find credentials.json");
+			System.exit(1);
+		}
+		catch(Exception e) {
+			System.out.println("Could not read credentials from credentials.json");
+			System.exit(1);
+		}
          
         //setting current directory
         String directory = System.getProperty("user.dir") + "/TwitterData/";
@@ -64,8 +77,7 @@ public class RetrieveUserScreenNameTweets
         File folder = new File(directory+user_screenname+"/");
         if(!folder.exists()) folder.mkdirs();
         //setting column names for .csv file
-        try
-        {
+        try {
             FileWriter fw = new FileWriter(new File(folder.toString() + "/tweets.csv"), true);
             String columns = "User ID\tUser name\tUser screen name\tDate user created account\t" +
                         "Statuses posted\tAmount of followers\tAmount user is following\t" + 
@@ -77,13 +89,12 @@ public class RetrieveUserScreenNameTweets
             fw.write(columns);
             fw.close();
         }
-        catch(IOException e)
-        {
+        catch(IOException e) {
             System.out.println("Could not write to .csv file");
         }
+
         //setting column names for tweets_with_coordiantes.csv file
-        try
-        {
+        try {
             FileWriter fw = new FileWriter(new File(folder.toString() + "/tweets_with_coordinates.csv"), true);
             String columns = "User ID\tUser name\tUser screen name\tDate user created account\t" +
                         "Statuses posted\tAmount of followers\tAmount user is following\t" + 
@@ -95,8 +106,7 @@ public class RetrieveUserScreenNameTweets
             fw.write(columns);
             fw.close();
         }
-        catch(IOException e)
-        {
+        catch(IOException e) {
             System.out.println("Could not write to .csv file");
         }
          
@@ -112,13 +122,11 @@ public class RetrieveUserScreenNameTweets
         //get the number of total statuses posted by the user
         List<Status> temp;
         int statuses_posted = 0;
-        try
-        {
+        try {
             temp = twitter.getUserTimeline(user_screenname);
             statuses_posted = temp.get(0).getUser().getStatusesCount();
         }
-        catch(TwitterException e)
-        {
+        catch(TwitterException e) {
         		e.printStackTrace();
             System.out.println("Could not receive users timeline");
             System.exit(1);
@@ -128,9 +136,9 @@ public class RetrieveUserScreenNameTweets
         int total = 0;
         System.out.println("Receiving tweets...");
         //while loop to continuously receive approx. 3000 tweets from the user (or the total amount of tweets posted if less)
-        while(true)
-        {
+        while(true) {
             int per_page = 100;
+
             //if we received all the statuses from the user or if we reached 3000, then break
             if(statuses_posted-total <= 0 || total >= 3000) break;
              
@@ -141,35 +149,29 @@ public class RetrieveUserScreenNameTweets
             Paging paging = new Paging(pageno, per_page);
             //get the statuses
             List<Status> statuses = null;
-            try
-            {
+            try {
                 statuses = twitter.getUserTimeline(user_screenname, paging);
             }
-            catch(TwitterException e)
-            {
+            catch(TwitterException e) {
                 System.out.println("Could not receive users timeline");
                 System.exit(1);
             }
              
-            if(statuses.size() == 0)
-            {
+            if(statuses.size() == 0) {
                 System.out.println(user_screenname + " has 0 statuses");
                 System.exit(1);
             }
              
-            for(int i = 0; i < statuses.size(); i++)
-            {   
+            for(int i = 0; i < statuses.size(); i++) {   
                 Status status = statuses.get(i);
                  
                 //determine if the status is within the given time frame, if given
-                if(wants_date)
-                {
+                if(wants_date) {
                     //if the status date is after the beginning date, continue
                     if(status.getCreatedAt().compareTo(beginning_date) > 0) continue;
                      
                     //or if the current status is before the ending_date, terminate
-                    if(status.getCreatedAt().compareTo(ending_date) < 0)
-                    {
+                    if(status.getCreatedAt().compareTo(ending_date) < 0) {
                         System.out.println("Killing current stream after receiving " + total + " tweets.\n");
                         System.exit(1);
                     }
@@ -181,22 +183,19 @@ public class RetrieveUserScreenNameTweets
                 boolean status_place = (status.getPlace()!=null?true:false);
                  
                 //for writing the serialized object to a stream
-                try
-                {
+                try {
                     FileOutputStream fos = new FileOutputStream(folder.toString() + "/tweets-" + total + ".ser");
                     ObjectOutputStream oos = new ObjectOutputStream(fos);
                     oos.writeObject(status);
                     oos.close();
                     fos.close();
                 }
-                catch(Exception e)
-                {
+                catch(Exception e) {
                     System.out.println("Could not write tweet #" + total + " as a serialized object.");
                 }
                  
                 //for writing the status and user object attributes to a .txt file  
-                try
-                {
+                try {
                     FileWriter fw = new FileWriter(new File(folder.toString() + "/tweets.txt"), true);
                     fw.write("Tweet #" + total + ":\n");
                      
@@ -221,8 +220,7 @@ public class RetrieveUserScreenNameTweets
                     fw.write("Is retweeted by me: " + status.isRetweetedByMe() + "\n");
                     fw.write("Is a reweet: " + status.isRetweet() + "\n");
                     Status t = status;
-                    while(t.isRetweet())
-                    {
+                    while(t.isRetweet()) {
                         fw.write("Retweeted status ID: " + t.getRetweetedStatus().getId() + "\n");
                         t = t.getRetweetedStatus();
                     }
@@ -233,14 +231,12 @@ public class RetrieveUserScreenNameTweets
                     fw.write(status.getText() + "\n\n-\n\n");
                     fw.close();
                 }
-                catch(IOException e)
-                {
+                catch(IOException e) {
                     System.out.println("Could not write tweet #" + total + " to the text file.");
                 }
                  
                 //for writing the status and user object attributes to a .csv file to be imported into Excel
-                try
-                {
+                try {
                     FileWriter fw = new FileWriter(new File(folder.toString() + "/tweets.csv"), true);
                      
                     fw.write((user_null?user.getId():"NULL_NULL_NULL") + "\t");
@@ -264,10 +260,8 @@ public class RetrieveUserScreenNameTweets
                     fw.write(status.isRetweetedByMe() + "\t");
                     fw.write( status.isRetweet() + "\t");
                     Status t = status;
-                    if(t.isRetweet())
-                    {
-                        while(t.isRetweet())
-                        {
+                    if(t.isRetweet()) {
+                        while(t.isRetweet()) {
                             fw.write(t.getRetweetedStatus().getId() + ", ");
                             t = t.getRetweetedStatus();
                         }
@@ -281,17 +275,14 @@ public class RetrieveUserScreenNameTweets
                     fw.write(status.getText().replace("\t"," ") + "\n");
                     fw.close();
                 }
-                catch(IOException e)
-                {
+                catch(IOException e) {
                     System.out.println("Could not write tweet #" + total + " to the text file.");
                 }
                  
                 //only write to this file if the status contains coordinates
-                if(status_location)
-                {
+                if(status_location) {
                     //for writing the status and user object attributes to a .csv file to be imported into Excel (only statuses with coordinates)
-                    try
-                    {
+                    try {
                         FileWriter fw = new FileWriter(new File(folder.toString() + "/tweets_with_coordinates.csv"), true);
                          
                         fw.write((user_null?user.getId():"NULL_NULL_NULL") + "\t");
@@ -315,10 +306,8 @@ public class RetrieveUserScreenNameTweets
                         fw.write(status.isRetweetedByMe() + "\t");
                         fw.write( status.isRetweet() + "\t");
                         Status t = status;
-                        if(t.isRetweet())
-                        {
-                            while(t.isRetweet())
-                            {
+                        if(t.isRetweet()) {
+                            while(t.isRetweet()) {
                                 fw.write(t.getRetweetedStatus().getId() + ", ");
                                 t = t.getRetweetedStatus();
                             }
@@ -332,8 +321,7 @@ public class RetrieveUserScreenNameTweets
                         fw.write(status.getText().replace("\t"," ") + "\n");
                         fw.close();
                     }
-                    catch(IOException e)
-                    {
+                    catch(IOException e) {
                         System.out.println("Could not write tweet #" + total + " to the text file.");
                     }
                 }
