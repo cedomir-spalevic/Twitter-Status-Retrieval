@@ -22,8 +22,8 @@ You will need to edit run.bat and provide an argument before running.Change the 
 <br/>
 
 ## How to run
-username - the Twitter username to retrieve statuses with
-ending_date - the ending date to filter the statuses with
+username - the Twitter username to retrieve statuses with <br/>
+ending_date - the ending date to filter the statuses with <br/>
 beginning_Date - the beginning date to filter the statuses with
 ```bash
 Usage: run.bat username
